@@ -4,6 +4,15 @@ from pathlib import Path
 import terminal as T
 
 
+class Selection:
+    def __init__(self, buffer: "Buffer") -> None:
+        self.buffer = buffer
+        self.x1 = 0
+        self.y1 = 0
+        self.x2 = 0
+        self.y2 = 0
+
+
 class Cursor:
     def __init__(self, buffer: "Buffer") -> None:
         self.x = 0
@@ -44,6 +53,19 @@ class Cursor:
         elif self.y < self.buffer.scroll:
             self.buffer.scroll -= 1
 
+    def home(self) -> None:
+        i = 0
+        for i, c in enumerate(self.buffer.buffer[self.y]):
+            if c != " ":
+                break
+        if i != self.x:
+            self.x = i
+            return
+        self.x = 0
+
+    def end(self) -> None:
+        self.x = len(self.buffer.buffer[self.y])
+
 
 class Buffer:
     def __init__(self, file: Path) -> None:
@@ -52,6 +74,7 @@ class Buffer:
         self.buffer: list[list[str]] = [[]]
         self.scroll: int = 0
         self.cursor = Cursor(self)
+        self.selection: Selection | None = None
         self.open()
 
         T.init()
@@ -73,6 +96,10 @@ class Buffer:
                 self.cursor.down()
             elif key == "BACKSPACE":
                 self.delete()
+            elif key == "HOME":
+                self.cursor.home()
+            elif key == "END":
+                self.cursor.end()
             elif key.isprintable() or key == "\n":
                 self.insert(key)
 

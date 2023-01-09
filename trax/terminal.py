@@ -107,6 +107,10 @@ def read():
         n = sys.stdin.read(1)
         if ord(n) == 91:
             n = sys.stdin.read(1)
+            if ord(n) == 72:
+                return "HOME"
+            if ord(n) == 70:
+                return "END"
             if ord(n) == 65:
                 return "UP"
             if ord(n) == 66:
